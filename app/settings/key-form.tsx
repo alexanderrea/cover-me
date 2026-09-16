@@ -75,7 +75,7 @@ export function KeyForm({ hint, setAt }: { hint: string | null; setAt: string | 
         <>
           <div className="field">
             <span className="mono-label">On file</span>
-            <div style={{ fontSize: 16, letterSpacing: "0.04em" }}>{hint}</div>
+            <div style={{ fontFamily: "var(--mono)", fontSize: 14, letterSpacing: "0.04em" }}>{hint}</div>
             {setAt ? (
               <p className="hint" style={{ marginTop: 6 }}>
                 Added{" "}
@@ -126,7 +126,7 @@ export function KeyForm({ hint, setAt }: { hint: string | null; setAt: string | 
 
           <div className="btn-row">
             <button
-              className="btn btn--acid"
+              className="btn btn--accent"
               onClick={save}
               disabled={busy || value.trim().length < 20}
             >

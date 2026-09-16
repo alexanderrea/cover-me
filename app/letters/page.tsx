@@ -56,7 +56,7 @@ export default async function LettersPage() {
           </Link>
         ))
       ) : (
-        <Link href="/new" className="btn btn--acid">
+        <Link href="/new" className="btn btn--accent">
           Write one →
         </Link>
       )}

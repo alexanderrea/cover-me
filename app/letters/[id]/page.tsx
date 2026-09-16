@@ -76,7 +76,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
       ) : null}
 
       <details className="panel">
-        <summary style={{ cursor: "pointer", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", fontSize: 12 }}>
+        <summary style={{ cursor: "pointer", fontFamily: "var(--mono)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.04em", fontSize: 12 }}>
           The job description it was written from
         </summary>
         <p className="hint" style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>

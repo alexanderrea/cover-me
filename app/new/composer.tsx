@@ -211,7 +211,7 @@ export function Composer() {
               />
             </div>
             <button
-              className="btn btn--acid"
+              className="btn btn--accent"
               disabled={!url.trim() || busy}
               onClick={() => ingest({ url: url.trim() })}
             >
@@ -237,7 +237,7 @@ export function Composer() {
               }}
             />
             <button
-              className="btn btn--acid"
+              className="btn btn--accent"
               disabled={busy}
               onClick={() => fileInput.current?.click()}
             >
@@ -353,7 +353,7 @@ export function Composer() {
           </div>
 
           {phase === "research" ? (
-            <div className="console" style={{ border: 0, borderBottom: "2px solid var(--rule)" }}>
+            <div className="console" style={{ border: 0, borderBottom: "1px solid var(--rule)" }}>
               <span className="blink">▮</span>
               <span>{status || "WORKING"}…</span>
             </div>
@@ -364,7 +364,7 @@ export function Composer() {
           </div>
 
           {sources.length ? (
-            <div style={{ borderTop: "2px solid var(--rule)", padding: "14px 18px" }}>
+            <div style={{ borderTop: "1px solid var(--rule)", padding: "14px 18px" }}>
               <span className="mono-label">Sources — {sources.length}</span>
               <ul className="sources">
                 {sources.map((s) => (
@@ -380,7 +380,7 @@ export function Composer() {
           ) : null}
 
           {phase === "done" && letter ? (
-            <div className="btn-row" style={{ borderTop: "2px solid var(--rule)", padding: 14 }}>
+            <div className="btn-row" style={{ borderTop: "1px solid var(--rule)", padding: 14 }}>
               <button className="btn btn--sm" onClick={copy}>
                 {copied ? "Copied ✓" : "Copy"}
               </button>

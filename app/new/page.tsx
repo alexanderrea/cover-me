@@ -30,7 +30,7 @@ export default async function NewLetterPage() {
             COVER ME runs on your own Anthropic API key, so your letters are
             billed to you. It takes a minute to create one.
           </p>
-          <Link href="/settings" className="btn btn--acid">
+          <Link href="/settings" className="btn btn--accent">
             Add your API key →
           </Link>
         </>
@@ -41,7 +41,7 @@ export default async function NewLetterPage() {
             There&apos;s no resume or LinkedIn profile on file yet, so there&apos;s
             nothing to write a letter from.
           </p>
-          <Link href="/profile" className="btn btn--acid">
+          <Link href="/profile" className="btn btn--accent">
             Add your details →
           </Link>
         </>

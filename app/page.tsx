@@ -17,7 +17,7 @@ export default async function Landing() {
           <br />
           the same
           <br />
-          <span style={{ background: "var(--acid)", color: "#0d0d0c", padding: "0 6px" }}>
+          <span style={{ color: "var(--accent)" }}>
             letter twice
           </span>
         </h1>

@@ -154,7 +154,7 @@ export function ProfileForm({ profile }: { profile: ProfileSafe }) {
 
         <div className="btn-row" style={{ marginBottom: 14 }}>
           <button
-            className="btn btn--acid"
+            className="btn btn--accent"
             onClick={() => fileInput.current?.click()}
             disabled={uploading}
           >

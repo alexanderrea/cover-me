@@ -27,7 +27,7 @@ export function Masthead({ active, signedIn }: { active?: string; signedIn: bool
               Key
             </Link>
             <form action="/auth/signout" method="post">
-              <button type="submit" className="navlink" style={{ background: "none", cursor: "pointer", font: "inherit", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              <button type="submit" className="navlink" style={{ background: "none", border: 0, borderLeft: "1px solid var(--rule-soft)", cursor: "pointer" }}>
                 Out
               </button>
             </form>
