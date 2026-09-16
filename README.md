@@ -44,9 +44,18 @@ Brutalist, monospaced, mobile-first.
 3. **Authentication → Sign In / Providers → Google** → enable it. Supabase shows
    you a callback URL — you'll need it in the next step.
 4. **Authentication → URL Configuration**:
-   - Site URL: `http://localhost:3000` (and your real domain in production)
-   - Redirect URLs: add `http://localhost:3000/auth/callback` and
-     `https://your-domain.com/auth/callback`
+   - **Site URL**: the deployed site, e.g. `https://your-app.vercel.app`.
+     Use `http://localhost:3000` here *only* if you develop locally — this is
+     where Supabase sends people when it can't use the requested callback, so
+     pointing it at localhost on a deployed app strands every sign-in at
+     "site can't be reached".
+   - **Redirect URLs**: add the callback for every environment you use —
+     `https://your-app.vercel.app/auth/callback`, plus
+     `http://localhost:3000/auth/callback` if you run it locally.
+
+   Supabase accepts any `redirect_to` when the flow *starts* and only enforces
+   this list when Google hands back, so a missing entry fails at the very end
+   of sign-in rather than the beginning.
 
 ### 2. Google OAuth
 
