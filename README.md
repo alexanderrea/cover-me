@@ -119,9 +119,19 @@ right.
 
 ## Deploying
 
-Push to a Git remote, import the repo in Vercel, and set the same four
-environment variables. Then add your production URLs to Supabase's
-**URL Configuration** (site URL and `/auth/callback` redirect).
+Live at **https://cover-me-aux-works.vercel.app** (Vercel project
+`aux-works/cover-me`, auto-deploying from `main`).
+
+The project sits behind Vercel Deployment Protection, so you need to be signed
+in to Vercel to reach it. Turn that off under **Project → Settings → Deployment
+Protection** when you want it open.
+
+`NEXT_PUBLIC_*` variables are inlined at build time, so **changing one needs a
+redeploy** — setting it in the dashboard is not enough on its own.
+
+After setting the Supabase variables, add the production URLs to Supabase's
+**Authentication → URL Configuration**: the site URL, and
+`https://cover-me-aux-works.vercel.app/auth/callback` as a redirect.
 
 The generate route is configured for `maxDuration = 300`, which needs a Vercel
 plan that allows long function durations; research plus writing usually takes
