@@ -12,21 +12,31 @@ export default async function NewLetterPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("resume_text, linkedin_text, full_name")
+    .select("resume_text, linkedin_text, anthropic_key_hint")
     .eq("id", auth.user.id)
-    .single<Pick<Profile, "resume_text" | "linkedin_text" | "full_name">>();
+    .single<Pick<Profile, "resume_text" | "linkedin_text" | "anthropic_key_hint">>();
 
-  const ready = Boolean(profile?.resume_text?.trim() || profile?.linkedin_text?.trim());
+  const hasSource = Boolean(profile?.resume_text?.trim() || profile?.linkedin_text?.trim());
+  const hasKey = Boolean(profile?.anthropic_key_hint);
 
   return (
     <div className="shell">
       <Masthead signedIn active="new" />
 
-      {ready ? (
-        <Composer />
-      ) : (
+      {!hasKey ? (
         <>
-          <h2 style={{ marginBottom: 10 }}>First, who are you?</h2>
+          <h2 style={{ marginBottom: 10 }}>First, add your key</h2>
+          <p className="hint" style={{ marginBottom: 18 }}>
+            COVER ME runs on your own Anthropic API key, so your letters are
+            billed to you. It takes a minute to create one.
+          </p>
+          <Link href="/settings" className="btn btn--acid">
+            Add your API key →
+          </Link>
+        </>
+      ) : !hasSource ? (
+        <>
+          <h2 style={{ marginBottom: 10 }}>Now, who are you?</h2>
           <p className="hint" style={{ marginBottom: 18 }}>
             There&apos;s no resume or LinkedIn profile on file yet, so there&apos;s
             nothing to write a letter from.
@@ -35,6 +45,8 @@ export default async function NewLetterPage() {
             Add your details →
           </Link>
         </>
+      ) : (
+        <Composer />
       )}
     </div>
   );

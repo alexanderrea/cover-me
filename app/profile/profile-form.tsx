@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Profile } from "@/lib/types";
+import type { ProfileSafe } from "@/lib/types";
 
 const FIELDS = [
   { key: "full_name", label: "Full name", type: "text", placeholder: "Alexander Rea" },
@@ -13,7 +13,7 @@ const FIELDS = [
   { key: "portfolio_url", label: "Portfolio / site", type: "url", placeholder: "yoursite.com" },
 ] as const;
 
-export function ProfileForm({ profile }: { profile: Profile }) {
+export function ProfileForm({ profile }: { profile: ProfileSafe }) {
   const router = useRouter();
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -22,7 +22,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const set = <K extends keyof Profile>(key: K, value: Profile[K]) => {
+  const set = <K extends keyof ProfileSafe>(key: K, value: ProfileSafe[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
     setStatus("idle");
   };

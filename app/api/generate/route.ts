@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { supabaseServer } from "@/lib/supabase/server";
-import { anthropic, MODEL } from "@/lib/anthropic";
+import { anthropicFor, MODEL } from "@/lib/anthropic";
+import { decrypt } from "@/lib/crypto";
 import { buildWritePrompt, WRITE_SYSTEM } from "@/lib/prompt";
 import { research } from "@/lib/research";
 import type { Profile } from "@/lib/types";
@@ -53,6 +54,24 @@ export async function POST(req: Request) {
     );
   }
 
+  // Bring-your-own-key: every call is billed to the user who made it.
+  if (!profile.anthropic_key_cipher) {
+    return new Response("Add your Anthropic API key in Settings before writing a letter.", {
+      status: 402,
+    });
+  }
+
+  let client;
+  try {
+    client = anthropicFor(decrypt(profile.anthropic_key_cipher));
+  } catch (err) {
+    console.error("[generate] could not read stored key:", err);
+    return new Response(
+      "Your stored API key couldn't be read. Remove it in Settings and add it again.",
+      { status: 409 },
+    );
+  }
+
   const encoder = new TextEncoder();
 
   const stream = new ReadableStream<Uint8Array>({
@@ -68,6 +87,7 @@ export async function POST(req: Request) {
         if (!input.skipResearch) {
           send("status", { phase: "research", message: "RESEARCHING COMPANY" });
           brief = await research(
+            client,
             { company: input.company, role: input.role, jobText: input.jobText },
             (message) => send("status", { phase: "research", message }),
           );
@@ -77,7 +97,7 @@ export async function POST(req: Request) {
         // --- 2. Write ----------------------------------------------------
         send("status", { phase: "write", message: "WRITING LETTER" });
 
-        const writing = anthropic().messages.stream({
+        const writing = client.messages.stream({
           model: MODEL,
           max_tokens: 16_000,
           system: WRITE_SYSTEM,
@@ -142,9 +162,11 @@ export async function POST(req: Request) {
       } catch (err) {
         console.error("[generate] failed:", err);
         const message =
-          err instanceof Error && err.message.includes("ANTHROPIC_API_KEY")
-            ? "The server has no Claude API key configured."
-            : "Something broke while writing. Try again.";
+          err instanceof Error && /authentication|401|invalid x-api-key/i.test(err.message)
+            ? "Anthropic rejected your API key. Check it in Settings."
+            : err instanceof Error && /credit|billing|quota|429/i.test(err.message)
+              ? "Your Anthropic account refused the request — check your credit balance."
+              : "Something broke while writing. Try again.";
         send("error", message);
       } finally {
         closed = true;

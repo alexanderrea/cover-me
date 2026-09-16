@@ -45,6 +45,9 @@ Brand and marketing site work for charity clients.
 SKILLS Figma, prototyping, service design, WCAG 2.1, research ops, HTML/CSS
 EDUCATION BA Graphic Design, UWE Bristol, 2016`,
   notes: "British spelling.",
+  anthropic_key_cipher: null,
+  anthropic_key_hint: null,
+  anthropic_key_set_at: null,
   updated_at: new Date().toISOString(),
 };
 
@@ -76,9 +79,12 @@ async function main() {
   console.log(`\n── RESEARCH ${"─".repeat(50)}`);
   const started = Date.now();
 
+  const client = anthropic();
+
   const brief = await research(
+    client,
     { company: "Nava PBC", role: "Senior Product Designer — Accessibility", jobText },
-    (message) => console.log(`   · ${message}`),
+    (message: string) => console.log(`   · ${message}`),
   );
 
   if (!brief) {
@@ -93,7 +99,7 @@ async function main() {
     `\n── LETTER (${toneBand(TONE).label}, ≈${lengthBand(LENGTH).words} words) ${"─".repeat(24)}\n`,
   );
 
-  const stream = anthropic().messages.stream({
+  const stream = client.messages.stream({
     model: MODEL,
     max_tokens: 16_000,
     system: WRITE_SYSTEM,

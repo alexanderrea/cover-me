@@ -1,5 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import { anthropic, MODEL } from "./anthropic";
+import { MODEL } from "./anthropic";
 import { RESEARCH_SYSTEM } from "./prompt";
 import type { Research, Source } from "./types";
 
@@ -43,6 +43,7 @@ function collect(content: Anthropic.ContentBlock[], sources: Map<string, Source>
  * letter.
  */
 export async function research(
+  client: Anthropic,
   args: { company?: string | null; role?: string | null; jobText: string },
   onStatus?: (message: string) => void,
 ): Promise<Research | null> {
@@ -64,7 +65,7 @@ ${args.jobText.slice(0, 20_000)}
 
   try {
     for (let turn = 0; turn <= MAX_CONTINUATIONS; turn++) {
-      const stream = anthropic().messages.stream({
+      const stream = client.messages.stream({
         model: MODEL,
         max_tokens: 16_000,
         system: RESEARCH_SYSTEM,

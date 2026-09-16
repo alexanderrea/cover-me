@@ -18,6 +18,13 @@ create table if not exists public.profiles (
   resume_text   text,          -- extracted plain text of the uploaded resume
   resume_name   text,          -- original filename, shown in the UI
   notes         text,          -- standing instructions: "never call me a guru"
+
+  -- The user's own Anthropic API key. Encrypted with ENCRYPTION_KEY
+  -- (see lib/crypto.ts) and never sent to the browser — only the hint is.
+  anthropic_key_cipher text,
+  anthropic_key_hint   text,     -- "sk-ant-…9f2a", safe to display
+  anthropic_key_set_at timestamptz,
+
   updated_at    timestamptz not null default now()
 );
 

@@ -23,6 +23,9 @@ export function Masthead({ active, signedIn }: { active?: string; signedIn: bool
             <Link href="/profile" className="navlink" data-active={active === "profile"}>
               You
             </Link>
+            <Link href="/settings" className="navlink" data-active={active === "settings"}>
+              Key
+            </Link>
             <form action="/auth/signout" method="post">
               <button type="submit" className="navlink" style={{ background: "none", cursor: "pointer", font: "inherit", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>
                 Out

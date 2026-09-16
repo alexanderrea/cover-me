@@ -11,8 +11,20 @@ export type Profile = {
   resume_text: string | null;
   resume_name: string | null;
   notes: string | null;
+  /** AES-GCM payload. Server-side only — never select this into a client component. */
+  anthropic_key_cipher: string | null;
+  /** "sk-ant-…9f2a". Safe to display. */
+  anthropic_key_hint: string | null;
+  anthropic_key_set_at: string | null;
   updated_at: string;
 };
+
+/**
+ * The profile shape safe to hand to a client component: everything except the
+ * encrypted key. `ProfileForm` takes this, so the cipher can't leak into the
+ * page payload by accident.
+ */
+export type ProfileSafe = Omit<Profile, "anthropic_key_cipher">;
 
 export type Source = { title: string; url: string };
 
@@ -33,4 +45,9 @@ export type Letter = {
 };
 
 /** Everything the profile form can write. `id` is taken from the session. */
-export type ProfilePatch = Partial<Omit<Profile, "id" | "updated_at">>;
+export type ProfilePatch = Partial<
+  Omit<
+    Profile,
+    "id" | "updated_at" | "anthropic_key_cipher" | "anthropic_key_hint" | "anthropic_key_set_at"
+  >
+>;

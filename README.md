@@ -3,10 +3,13 @@
 Cover letters written from your actual resume, your LinkedIn profile, and live
 web research on the company — not from a template.
 
-Sign in with Google, add your details once, then paste a job link. It reads the
-posting, searches the web for what's worth knowing about the company, and writes
-a letter you can tune with two sliders: **tone** (reserved → bold) and **length**
-(≈130 → ≈450 words).
+Sign in with Google, add your own Anthropic API key, add your details once, then
+paste a job link. It reads the posting, searches the web for what's worth knowing
+about the company, and writes a letter you can tune with two sliders: **tone**
+(reserved → bold) and **length** (≈130 → ≈450 words).
+
+**Bring your own key.** Every letter is billed to the Anthropic key the signed-in
+user added in Settings — never to whoever runs the server.
 
 Brutalist, monospaced, mobile-first.
 
@@ -18,7 +21,7 @@ Brutalist, monospaced, mobile-first.
 |---|---|
 | Framework | Next.js 15 (App Router) + React 19, TypeScript |
 | Auth + data | Supabase — Google OAuth, Postgres, row level security |
-| Writing + research | Claude Opus 5 with the server-side `web_search` / `web_fetch` tools |
+| Writing + research | Claude Opus 5 with the server-side `web_search` / `web_fetch` tools, on each user's own key |
 | Parsing | `unpdf` (PDF), `mammoth` (DOCX), hand-rolled HTML → text |
 | Styling | Plain CSS, no framework |
 | Hosting | Vercel |
@@ -55,8 +58,18 @@ In the [Google Cloud console](https://console.cloud.google.com/apis/credentials)
 cp .env.example .env.local
 ```
 
-Fill in the four values — Supabase URL and anon key, your Anthropic API key, and
-the site URL.
+Fill in the values. `ENCRYPTION_KEY` is required — it encrypts each user's
+stored Anthropic key at rest:
+
+```bash
+openssl rand -hex 32
+```
+
+`ANTHROPIC_API_KEY` is **not** used by the app; it only powers `npm run smoke`.
+The app takes each user's key from Settings instead.
+
+> Changing `ENCRYPTION_KEY` later makes every stored key undecryptable, and each
+> user has to re-enter theirs. Set it once and keep it.
 
 ### 4. Run
 
@@ -79,6 +92,8 @@ fastest way to confirm the Claude side is wired up. Costs a few cents per run.
 
 ## How a letter gets made
 
+0. **The user's key** is decrypted from `profiles.anthropic_key_cipher` and used
+   for both calls below. No key, no letter — `/api/generate` returns 402.
 1. **Ingest** (`app/api/ingest`) turns a URL or an uploaded file into plain text.
    For URLs it prefers the page's schema.org `JobPosting` data and falls back to
    stripping the HTML.
@@ -96,6 +111,22 @@ ground running"). That file is the main dial to turn if the letters don't sound
 right.
 
 ---
+
+## Where the API keys live
+
+Each user's Anthropic key is encrypted with AES-256-GCM ([`lib/crypto.ts`](lib/crypto.ts))
+before it touches the database, using `ENCRYPTION_KEY` from the environment. Two
+independent layers protect it:
+
+- **Row level security** stops one user reading another's row.
+- **Encryption at rest** means a database leak yields nothing without
+  `ENCRYPTION_KEY`, which never goes near Postgres.
+
+The plaintext key is only ever held in memory, inside the request that uses it.
+It is never returned to the browser — pages select `anthropic_key_hint`
+(`sk-ant-…9f2a`) and deliberately never `anthropic_key_cipher`. Keys are verified
+against Anthropic before being stored, so a bad paste fails in Settings rather
+than mid-letter.
 
 ## Known limits
 
@@ -128,6 +159,8 @@ Protection** when you want it open.
 
 `NEXT_PUBLIC_*` variables are inlined at build time, so **changing one needs a
 redeploy** — setting it in the dashboard is not enough on its own.
+
+Remember `ENCRYPTION_KEY` must be set in Vercel too, or saving a key fails.
 
 After setting the Supabase variables, add the production URLs to Supabase's
 **Authentication → URL Configuration**: the site URL, and
