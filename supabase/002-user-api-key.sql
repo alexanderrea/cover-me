@@ -1,6 +1,21 @@
 -- Migration: per-user Anthropic API keys.
--- Run this in the Supabase SQL editor if you created your database from the
--- original schema.sql. New installs get these columns already.
+--
+-- ⚠️  YOU PROBABLY DON'T NEED THIS FILE.
+--
+-- Run it ONLY if your database was created from an older schema.sql that
+-- predates the anthropic_key_* columns. A fresh install gets those columns
+-- from schema.sql already — run that instead, and skip this.
+--
+-- This must run AFTER schema.sql. It alters public.profiles; it cannot
+-- create it.
+
+do $$
+begin
+  if to_regclass('public.profiles') is null then
+    raise exception
+      'public.profiles does not exist. Run supabase/schema.sql first — it already includes these columns, so you can then skip this migration.';
+  end if;
+end $$;
 
 alter table public.profiles
   add column if not exists anthropic_key_cipher text,  -- AES-256-GCM, see lib/crypto.ts

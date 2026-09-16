@@ -34,8 +34,13 @@ Brutalist, monospaced, mobile-first.
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. **SQL Editor** → paste all of [`supabase/schema.sql`](supabase/schema.sql) → Run.
-   That creates the two tables, the RLS policies, and a trigger that gives every
-   new sign-in a profile row.
+   That creates the two tables (including the API-key columns), the RLS
+   policies, and a trigger that gives every new sign-in a profile row.
+
+   That one file is all a new database needs. `supabase/002-user-api-key.sql`
+   is only for a database built from an older copy of `schema.sql` — it alters
+   `profiles` and will fail with `relation "public.profiles" does not exist`
+   if you run it on an empty database.
 3. **Authentication → Sign In / Providers → Google** → enable it. Supabase shows
    you a callback URL — you'll need it in the next step.
 4. **Authentication → URL Configuration**:
