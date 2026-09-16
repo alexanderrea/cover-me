@@ -11,6 +11,16 @@ function isPublic(pathname: string) {
 }
 
 export async function middleware(req: NextRequest) {
+  // When the requested callback isn't in Supabase's Redirect URLs allow-list,
+  // Supabase quietly falls back to the project's Site URL — dropping the user
+  // on "/" with ?code=... still attached and nothing there to exchange it.
+  // That reads as a hung sign-in. Forward it to the route that handles it.
+  if (req.nextUrl.pathname === "/" && req.nextUrl.searchParams.has("code")) {
+    const callback = req.nextUrl.clone();
+    callback.pathname = "/auth/callback";
+    return NextResponse.redirect(callback);
+  }
+
   // Start from a pass-through response so Supabase can write refreshed
   // auth cookies onto it.
   let res = NextResponse.next({ request: req });
